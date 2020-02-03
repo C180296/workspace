@@ -1,3 +1,31 @@
+<?php
+require_once("../database.php");
+require_once("../classes.php");
+$area = -1;
+if(isset($REQUEST["area"])) {
+$area = $REQUEST["area"];
+}
+
+$pdo = connectDatabase();
+$sql = "select * from restaurants where area=?";
+$pstmt = $pdo->prepare($sql);
+$pstmt->bindValue(1,$area);
+$pstmt->execute();
+$rs = $pstmt->fetchAll();
+$restraurants = [];
+foreach($rs as $record){
+    $id = intval(["id"]);
+    $name = $record["name"];
+    $detail = $record["detail"];
+    $image = $record["image"];
+    $restaurant = new Restourant($id,$name,$detail,$image,$area);
+    $restraurants[] = $restourant;
+}
+?>
+
+
+
+
 <!DOCTYPE html>
 <html lang="ja">
 	<head>
@@ -15,8 +43,16 @@
 				<th>画像ファイル名</th>
 				<th>地域ID</th>
 			</tr>
-						<tr>
-				<td>1</td>
+			<?php foreach ($restaurants as $restaurant){?>
+			<tr>
+				<td><?= $restaurant->getId() ?></td>
+				<td><?= $restaurant->getName() ?></td>
+				<td><?= $restaurant->getDetail() ?></td>
+				<td><?= $restaurant->getImage() ?></td>
+				<td><?= $restaurant->getArea() ?></td>
+				</tr>
+				<?php} ?>
+				<!--
 				<td>Wine Bar ENOTECA</td>
 				<td>常時10種類以上の赤・白ワインをご用意しています。
 記念日にご来店ください。</td>
@@ -38,5 +74,6 @@
 				<td>2</td>
 			</tr>
 					</table>
+					
 	</body>
 </html>
